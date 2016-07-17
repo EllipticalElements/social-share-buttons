@@ -1,0 +1,154 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../elliptical-polymer-behaviors/component-behavior.html">
+
+<dom-module id="social-share-buttons">
+    <style>
+        :host{
+            display:-webkit-flex;
+            display:flex;
+            width:100%;
+        }
+        :host.space-around{
+            -webkit-justify-content:space-around;
+            justify-content:space-around;
+        }
+        :host.center{
+            -webkit-justify-content:center;
+            justify-content:center;
+            width:auto;
+            margin-right:1em
+        }
+        :host ::content>span{
+            cursor:pointer !important;
+        }
+        :host ::content>.linkedin{
+            color:#346da6;
+        }
+        :host ::content>.goole{
+            color:#ca4738;
+        }
+        :host ::content>.twitter{
+            color:#1da1f2;
+        }
+        :host ::content>.facebook{
+            color:#346da6 !important;
+        }
+        :host ::content>.pinterest{
+            color:#ca4738;
+        }
+    </style>
+    <template>
+        <content></content>
+    </template>
+</dom-module>
+<script>
+    Polymer({
+        is: 'social-share-buttons',
+        behaviors: [Elliptical.ComponentBehavior],
+        properties: {
+            title: {
+                type: String,
+                value: ''
+            },
+            url: {
+                type: String,
+                value: ''
+            },
+            media: {
+                type: String,
+                value: ''
+            },
+            iconMargin:{
+                type:String,
+                value:null
+            },
+            iconColor:{
+                type:String,
+                value:null
+            }
+        },
+
+        ready: function () {
+            this._setIconMargin();
+            this._setIconColor();
+            var click = this._data.click;
+            this._event(this.element, click, '[data-id]', this._onClick.bind(this));
+        },
+        
+        _setIconMargin:function(){
+            if(!this.iconMargin) return;
+            var span=this.element.find('span');
+            span.css({'marginRight':this.iconMargin});
+        },
+         _setIconColor:function(){
+            if(!this.iconColor) return;
+            var span=this.element.find('span');
+            span.css({'color':this.iconColor});
+        },
+
+        _onClick: function (event) {
+            var target = $(event.target);
+            var id = target.attr('data-id');
+            switch (id) {
+                case 'twitter':
+                    this._twitter(target);
+                    break;
+                case 'facebook':
+                    this._facebook(target);
+                    break;
+                case 'pinterest':
+                    this._pinterest(target);
+                    break;
+                case 'google':
+                    this._google(target);
+                    break;
+                case 'linkedin':
+                    this._linkedIn(target);
+                    break;
+                
+            }
+        },
+
+        _twitter: function (target) {
+            var url = encodeURI(this.url);
+            var text = encodeURI(this.title);
+            var URL = 'https://twitter.com/share?url=' + url + '&text=' + text;
+            this._launchWindow(URL);
+        },
+        _facebook: function (target) {
+            var url = encodeURI(this.url);
+            var text = encodeURI(this.title);
+            var URL = 'https://www.facebook.com/share.php?u=' + url + '&title=' + text;
+            this._launchWindow(URL);
+        },
+        _pinterest: function (target) {
+            var url = encodeURI(this.url);
+            var text = encodeURI(this.title);
+            var media = encodeURI(this.media);
+            var URL = 'https://pinterest.com/pin/create/bookmarklet/?media=' + media + '&url=' + url + '&is_video=false&description=' + text;
+            this._launchWindow(URL);
+        },
+        _google: function (target) {
+            var url = encodeURI(this.url);
+            var URL = 'https://plus.google.com/share?url=' + url;
+            this._launchWindow(URL);
+        },
+        _linkedIn: function (target) {
+            var url = encodeURI(this.url);
+            var text = encodeURI(this.title);
+            var source = this._getDomainName();
+            var URL = 'http://www.linkedin.com/shareArticle?mini=true&url=' + url + '&title=' + text + '&source=' + source;
+            this._launchWindow(URL);
+        },
+
+        _getDomainName: function () {
+            var hostName = location.hostname;
+            return hostName.substring(hostName.lastIndexOf(".", hostName.lastIndexOf(".") - 1) + 1);
+        },
+
+        _launchWindow: function (url) {
+            window.open(url);
+        }
+    });
+
+</script>
